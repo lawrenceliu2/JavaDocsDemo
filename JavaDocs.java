@@ -7,7 +7,7 @@ import java.io.*;
 public class JavaDocs extends JFrame implements ActionListener{
     private Container pane;
     private JTextArea t;
-    private JButton newFileButton, loadButton, saveButton, graphs, fonts;
+    private JButton newFileButton, loadButton, saveButton, graphs, fonts, format;
     final JFileChooser fc = new JFileChooser();
     private JLabel fileName;
     private String text;
@@ -45,6 +45,10 @@ public class JavaDocs extends JFrame implements ActionListener{
 	fonts = new JButton("Fonts");
 	fonts.addActionListener(this);
 
+	//Format the text
+	format = new JButton("Format");
+	format.addActionListener(this);
+
 	//TextArea where you type things
 	t = new JTextArea(
 			  "This is your workspace!\n\n" +
@@ -52,6 +56,8 @@ public class JavaDocs extends JFrame implements ActionListener{
 			  "Otherwise, make a new file by pressing the 'New File' button.\n\n"+
 			  "Please remember to save your work before exiting, we are not responsible for any lost text! :)\n"
 			  );
+	
+
 
 	JPanel buttons = new JPanel();
 	buttons.add(newFileButton);
@@ -61,6 +67,7 @@ public class JavaDocs extends JFrame implements ActionListener{
 
 	JPanel bottomButtons = new JPanel();
 	bottomButtons.add(fonts);
+	bottomButtons.add(format);
 	bottomButtons.add(graphs);
 
 	pane.add (buttons);
@@ -85,12 +92,12 @@ public class JavaDocs extends JFrame implements ActionListener{
 
 	    File file = null;
 	    if (returnVal == JFileChooser.APPROVE_OPTION){
-		file = fc.getSelectedFile();
-		fileName.setText(file.getName());
-		if (!(fileName.getText()).endsWith(".txt")){
+		file = fc.getSelectedFile();	
+		if (!(file.getName()).endsWith(".txt")){
 		    JOptionPane.showMessageDialog (null, "File not loaded. Please only load files that end in '.txt'.", "Loading Failed",JOptionPane.PLAIN_MESSAGE);
 		}else{	
 		    text="";
+		    fileName.setText(file.getName());
 		    try{
 			Scanner s = new Scanner(file);
 			while (s.hasNextLine()){
@@ -108,24 +115,19 @@ public class JavaDocs extends JFrame implements ActionListener{
 	
 
 	if (e.getSource() == saveButton){
-	    if (!(fileName.getText()).endsWith(".txt")){
-		JOptionPane.showMessageDialog (null, "File not saved. Please only save files that end in '.txt'.", "Saving Failed",JOptionPane.PLAIN_MESSAGE);
-	    }
-	    else{
-		try{	
-		    FileWriter w = new FileWriter(fileName.getText());
-		    text = t.getText();
-		    w.write(text);
-		    w.close();
-		    JOptionPane.showMessageDialog (null, "Your file has been saved!", "File Saved",JOptionPane.PLAIN_MESSAGE);
-		}catch(IOException error){
-		    System.out.println(error);
-		}
+	    try{
+		FileWriter w = new FileWriter(fileName.getText());
+		text = t.getText();
+		w.write(text);
+		w.close();
+		JOptionPane.showMessageDialog (null, "Your file has been saved!", "File Saved",JOptionPane.PLAIN_MESSAGE);
+	    }catch(IOException error){
+		System.out.println(error);
 	    }
 	}
 
 	if (e.getSource() == fonts){
-	    String[] choices = {"Times New Roman", "Comic Sans MS"};
+	    String[] choices = {"Times New Roman", "Comic Sans MS", "Serif", "SansSerif", "Monospaced"};
 	    Object s = JOptionPane.showInputDialog(null, "Choose your preferred font", "Fonts", JOptionPane.PLAIN_MESSAGE, null, choices, choices[0]);
 	    if (s!=null){
 		Font newFont = new Font(s.toString(), Font.PLAIN, (t.getFont()).getSize());
@@ -133,6 +135,27 @@ public class JavaDocs extends JFrame implements ActionListener{
 	    }else{}
 	}
 	
-    }
+	if (e.getSource() == format){
+	    String[] choices = {"Plain", "Bold", "Italic"};
+	    Object s = JOptionPane.showInputDialog(null, "", "Format", JOptionPane.PLAIN_MESSAGE, null, choices, choices[0]);
+	    if (s!=null){
+		if (s.toString().equals("Plain")){
+		    Font newFont = new Font((t.getFont()).getName(), Font.PLAIN, (t.getFont()).getSize());
+		    t.setFont(newFont);
+		}
+		if (s.toString().equals("Bold")){
+		    Font newFont = new Font((t.getFont()).getName(), Font.BOLD, (t.getFont()).getSize());
+		    t.setFont(newFont);
+		}
+		if (s.toString().equals("Italic")){
+		    Font newFont = new Font((t.getFont()).getName(), Font.ITALIC, (t.getFont()).getSize());
+		    t.setFont(newFont);
+		}
+	    }else{}	
 
+	}
+	
+    
+
+    }
 }
